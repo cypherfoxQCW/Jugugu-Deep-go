@@ -1,0 +1,590 @@
+openapi: 3.0.1
+info:
+  title: Jugugu密钥Fast模式
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: 深度接入
+paths:
+  /Jugugu_FastGetNFT:
+    post:
+      deprecated: false
+      description: 使用项目方自己账户体系的OpenID注册并绑定jugugu账号，项目方接入jugugu的Account和Secret以及用户登录后的登录令牌token，等参数请求进行小红花POAP领取。
+      parameters: []
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          application/json:
+            example:
+              phone: "10101010101"
+              account: 31c681bcb34c1457ab5b1521c340468ce106dfc6592bac55fb68f76994130d66
+              secret: 8d0f0b25c236af70c4980bea261b154745ccfba25e5683ef100a9e05b0922e88
+              time: 0
+              openid: "95"
+              token: qqqqUtconsecteturoccaecatveniam
+              paymentpassword: ""
+            schema:
+              properties:
+                phone:
+                  title: 手机号
+                  type: string
+                address:
+                  title: 用户区块链地址
+                  type: string
+                account:
+                  description: 通过接入jugugu申请
+                  title: 项目方账户
+                  type: string
+                secret:
+                  description: 通过接入jugugu申请
+                  title: 项目方密码
+                  type: string
+                time:
+                  description: int64类型
+                  title: +8区Unix时间，单位秒
+                  type: integer
+                token:
+                  description: 通过登录获得，首次注册时也会获得
+                  title: 登录令牌
+                  type: string
+                openid:
+                  description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+                  title: 项目方账户系统的唯一识别码
+                  type: string
+                contract:
+                  description: 正式网合约：cfx:acb2027ht5t916d323zjfw9knrdj42fm8ay9n7e3x0  测试网合约：cfxtest:acbk50byfusjyh7494rm8yd8xhnkdh9jyetgadzem4
+                  title: 小红花POAP合约
+                  type: string
+                nftid:
+                  title: POAP的事件ID
+                  type: string
+                codestr:
+                  title: 小红花POAP领取码
+                  type: string
+                chaintype:
+                  description: 这里填cfx即可
+                  title: 区块链类型
+                  type: string
+              required:
+              - account
+              - address
+              - chaintype
+              - codestr
+              - contract
+              - nftid
+              - openid
+              - phone
+              - secret
+              - time
+              - token
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                "1":
+                  summary: 异常示例
+                  value: Login Token Err
+                "2":
+                  summary: 成功示例
+                  value:
+                    state: "0"
+                    msg: 您只能领取1次!
+                "3":
+                  summary: 成功示例
+                  value:
+                    state: "1"
+                    msg: 领取成功！正在等待链上确认,请稍后..
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+          description: 成功
+      summary: 3.jugugu获取小红花POAP
+      tags:
+      - 深度接入
+      x-apifox-folder: 深度接入
+      x-apifox-status: released
+  /Jugugu_FastReg:
+    post:
+      deprecated: false
+      description: 使用项目方自己账户体系的OpenID注册并绑定jugugu账号，如果该手机已经注册jugugu则直接进行绑定OpenID。注册的用户返回短密钥，绑定的用户不返回短密钥，短密钥请务必加密存储，建议使用ECC256进行加密，加密解密密钥妥善保存，建议内存中存放
+      parameters: []
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_1'
+        content:
+          application/json:
+            example:
+              phone: "10101010101"
+              account: 31c681bcb34c1457ab5b1521c340468ce106dfc6592bac55fb68f76994130d66
+              secret: 8d0f0b25c236af70c4980bea261b154745ccfba25e5683ef100a9e05b0922e88
+              time: 0
+              openid: "95"
+              token: qqqqUtconsecteturoccaecatveniam
+              paymentpassword: ""
+            schema:
+              properties:
+                phone:
+                  title: 手机号
+                  type: string
+                account:
+                  description: 通过接入jugugu申请
+                  title: 项目方账户
+                  type: string
+                secret:
+                  description: 通过接入jugugu申请
+                  title: 项目方密码
+                  type: string
+                time:
+                  description: int64类型
+                  title: +8区Unix时间，单位秒
+                  type: integer
+                randomtoken:
+                  description: 可以由sha256函数随机产生，避免2分钟内重复，可用时间+其他唯一参数作为种子，防止重放攻击
+                  title: 通信随机令牌
+                  type: string
+                paymentpassword:
+                  description: 可以自由设置也可以传“”空字符串，系统随机生成，建议让系统随机生成
+                  nullable: true
+                  title: 区块链短密钥
+                  type: string
+                openid:
+                  description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+                  title: 项目方账户系统的唯一识别码
+                  type: string
+              required:
+              - account
+              - openid
+              - phone
+              - randomtoken
+              - secret
+              - time
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                "1":
+                  summary: 成功示例
+                  value:
+                    phone: "10101010101"
+                    confluxaddress: cfxtest:aar1hp52zwfm4b5n6z2xrsgeacj8fuzv6e2365319n
+                    ethaddress: 0x4B73b378ac8aaD076Be57136B8c40091E2c2b1e1
+                    paymentpassword: 9ab14abcda15f774152b
+                    token: df482c720c10a36969c68b77a44225e604592d8a396ce7fd34fd311845d34b91
+                "2":
+                  summary: 异常示例
+                  value: OpenID Had Banding
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+          description: 成功
+      summary: 1.注册jugugu
+      tags:
+      - 深度接入
+      x-apifox-folder: 深度接入
+      x-apifox-status: released
+  /Jugugu_FastSignTx:
+    post:
+      deprecated: false
+      description: 使用项目方自己账户体系的OpenID，项目方接入jugugu的Account和Secret以及用户登录后的登录令牌token，等参数请求进行交易签名,返回签名后的交易数据rowData。详情见示例代码
+      parameters: []
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_2'
+        content:
+          application/json:
+            example:
+              phone: "10101010101"
+              account: 31c681bcb34c1457ab5b1521c340468ce106dfc6592bac55fb68f76994130d66
+              secret: 8d0f0b25c236af70c4980bea261b154745ccfba25e5683ef100a9e05b0922e88
+              time: 0
+              openid: "95"
+              token: qqqqUtconsecteturoccaecatveniam
+              paymentpassword: ""
+            schema:
+              properties:
+                phone:
+                  title: 手机号
+                  type: string
+                account:
+                  description: 通过接入jugugu申请
+                  title: 项目方账户
+                  type: string
+                secret:
+                  description: 通过接入jugugu申请
+                  title: 项目方密码
+                  type: string
+                time:
+                  description: int64类型
+                  title: +8区Unix时间，单位秒
+                  type: integer
+                token:
+                  description: 登录或者首次登录时获得
+                  title: 登录令牌
+                  type: string
+                paymentpass:
+                  description: 可以自由设置也可以传“”空字符串，系统随机生成，建议让系统随机生成
+                  title: 区块链短密钥
+                  type: string
+                openid:
+                  description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+                  title: 项目方账户系统的唯一识别码
+                  type: string
+                from:
+                  description: jugugu区块链地址，与phone对应
+                  title: jugugu地址
+                  type: string
+                unsigntxjson:
+                  items:
+                    type: string
+                  title: 未签名交易的json化后的[]byte数组
+                  type: array
+                chaintype:
+                  description: 这里填cfx即可
+                  title: 区块链类型
+                  type: string
+              required:
+              - account
+              - chaintype
+              - from
+              - openid
+              - paymentpass
+              - phone
+              - secret
+              - time
+              - token
+              - unsigntxjson
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              examples: {}
+              schema:
+                properties: {}
+                type: object
+          description: 成功
+      summary: 4.使用jugugu进行交易签名
+      tags:
+      - 深度接入
+      x-apifox-folder: 深度接入
+      x-apifox-status: released
+  /Jugugu_FastLogin:
+    post:
+      deprecated: false
+      description: 使用项目方自己账户体系OpenID,用户手机号，项目方接入jugugu的Account和Secret登录用户jugugu账户，获得登录token  该token用于后续函数调用
+      parameters: []
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_3'
+        content:
+          application/json:
+            example:
+              phone: "10101010101"
+              account: 31c681bcb34c1457ab5b1521c340468ce106dfc6592bac55fb68f76994130d66
+              secret: 8d0f0b25c236af70c4980bea261b154745ccfba25e5683ef100a9e05b0922e88
+              time: 0
+              openid: "95"
+              token: qqqqUtconsecteturoccaecatveniam
+              paymentpassword: ""
+            schema:
+              properties:
+                phone:
+                  title: 手机号
+                  type: string
+                account:
+                  description: 通过接入jugugu申请
+                  title: 项目方账户
+                  type: string
+                secret:
+                  description: 通过接入jugugu申请
+                  title: 项目方密码
+                  type: string
+                time:
+                  description: int64类型
+                  title: +8区Unix时间，单位秒
+                  type: integer
+                randomtoken:
+                  description: 可以由sha256函数随机产生，避免2分钟内重复，可用时间+其他唯一参数作为种子，防止重放攻击
+                  title: 通信随机令牌
+                  type: string
+                openid:
+                  description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+                  title: 项目方账户系统的唯一识别码
+                  type: string
+              required:
+              - account
+              - openid
+              - phone
+              - randomtoken
+              - secret
+              - time
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                "1":
+                  summary: 成功示例
+                  value:
+                    phone: "10101010101"
+                    confluxaddress: cfxtest:aarghz6gtnnghdz61jdz90gumy40k5d2aj93127ceh
+                    ethaddress: 0x5A63d7867AD6638ebcbA075FD8D0553564EC7802
+                    paymentpassword: ""
+                    token: 113d958a93435bd90794d6afaa07de731e0baf6f04e4c75e9ec3150201e0a496
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+          description: 成功
+      summary: 2.注册jugugu登录
+      tags:
+      - 深度接入
+      x-apifox-folder: 深度接入
+      x-apifox-status: released
+components:
+  requestBodies:
+    inline_object_1:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_1'
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+    inline_object_3:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_3'
+    inline_object_2:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_2'
+  schemas:
+    inline_object:
+      properties:
+        phone:
+          title: 手机号
+          type: string
+        address:
+          title: 用户区块链地址
+          type: string
+        account:
+          description: 通过接入jugugu申请
+          title: 项目方账户
+          type: string
+        secret:
+          description: 通过接入jugugu申请
+          title: 项目方密码
+          type: string
+        time:
+          description: int64类型
+          title: +8区Unix时间，单位秒
+          type: integer
+        token:
+          description: 通过登录获得，首次注册时也会获得
+          title: 登录令牌
+          type: string
+        openid:
+          description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+          title: 项目方账户系统的唯一识别码
+          type: string
+        contract:
+          description: 正式网合约：cfx:acb2027ht5t916d323zjfw9knrdj42fm8ay9n7e3x0  测试网合约：cfxtest:acbk50byfusjyh7494rm8yd8xhnkdh9jyetgadzem4
+          title: 小红花POAP合约
+          type: string
+        nftid:
+          title: POAP的事件ID
+          type: string
+        codestr:
+          title: 小红花POAP领取码
+          type: string
+        chaintype:
+          description: 这里填cfx即可
+          title: 区块链类型
+          type: string
+      required:
+      - account
+      - address
+      - chaintype
+      - codestr
+      - contract
+      - nftid
+      - openid
+      - phone
+      - secret
+      - time
+      - token
+      type: object
+    inline_response_200:
+      example:
+        msg: msg
+        state: state
+      properties:
+        state:
+          description: -1代表失败并错误，0代表失败并提示，1代表成功
+          title: 是否成功
+          type: string
+        msg:
+          description: 详细信息
+          title: 提示信息
+          type: string
+      required:
+      - msg
+      - state
+    inline_object_1:
+      properties:
+        phone:
+          title: 手机号
+          type: string
+        account:
+          description: 通过接入jugugu申请
+          title: 项目方账户
+          type: string
+        secret:
+          description: 通过接入jugugu申请
+          title: 项目方密码
+          type: string
+        time:
+          description: int64类型
+          title: +8区Unix时间，单位秒
+          type: integer
+        randomtoken:
+          description: 可以由sha256函数随机产生，避免2分钟内重复，可用时间+其他唯一参数作为种子，防止重放攻击
+          title: 通信随机令牌
+          type: string
+        paymentpassword:
+          description: 可以自由设置也可以传“”空字符串，系统随机生成，建议让系统随机生成
+          nullable: true
+          title: 区块链短密钥
+          type: string
+        openid:
+          description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+          title: 项目方账户系统的唯一识别码
+          type: string
+      required:
+      - account
+      - openid
+      - phone
+      - randomtoken
+      - secret
+      - time
+      type: object
+    inline_response_200_1:
+      example:
+        phone: phone
+        ethaddress: ethaddress
+        confluxaddress: confluxaddress
+        paymentpassword: paymentpassword
+        token: token
+      properties:
+        phone:
+          title: 手机号
+          type: string
+        confluxaddress:
+          title: cfx地址
+          type: string
+        ethaddress:
+          title: eth地址
+          type: string
+        paymentpassword:
+          title: 区块链短密钥
+          type: string
+        token:
+          title: 登录令牌
+          type: string
+      required:
+      - confluxaddress
+      - ethaddress
+      - paymentpassword
+      - phone
+      - token
+    inline_object_2:
+      properties:
+        phone:
+          title: 手机号
+          type: string
+        account:
+          description: 通过接入jugugu申请
+          title: 项目方账户
+          type: string
+        secret:
+          description: 通过接入jugugu申请
+          title: 项目方密码
+          type: string
+        time:
+          description: int64类型
+          title: +8区Unix时间，单位秒
+          type: integer
+        token:
+          description: 登录或者首次登录时获得
+          title: 登录令牌
+          type: string
+        paymentpass:
+          description: 可以自由设置也可以传“”空字符串，系统随机生成，建议让系统随机生成
+          title: 区块链短密钥
+          type: string
+        openid:
+          description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+          title: 项目方账户系统的唯一识别码
+          type: string
+        from:
+          description: jugugu区块链地址，与phone对应
+          title: jugugu地址
+          type: string
+        unsigntxjson:
+          items:
+            type: string
+          title: 未签名交易的json化后的[]byte数组
+          type: array
+        chaintype:
+          description: 这里填cfx即可
+          title: 区块链类型
+          type: string
+      required:
+      - account
+      - chaintype
+      - from
+      - openid
+      - paymentpass
+      - phone
+      - secret
+      - time
+      - token
+      - unsigntxjson
+      type: object
+    inline_object_3:
+      properties:
+        phone:
+          title: 手机号
+          type: string
+        account:
+          description: 通过接入jugugu申请
+          title: 项目方账户
+          type: string
+        secret:
+          description: 通过接入jugugu申请
+          title: 项目方密码
+          type: string
+        time:
+          description: int64类型
+          title: +8区Unix时间，单位秒
+          type: integer
+        randomtoken:
+          description: 可以由sha256函数随机产生，避免2分钟内重复，可用时间+其他唯一参数作为种子，防止重放攻击
+          title: 通信随机令牌
+          type: string
+        openid:
+          description: 项目方账户系统的唯一识别码，用于绑定登录jugugu系统
+          title: 项目方账户系统的唯一识别码
+          type: string
+      required:
+      - account
+      - openid
+      - phone
+      - randomtoken
+      - secret
+      - time
+      type: object
